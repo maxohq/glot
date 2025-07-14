@@ -34,6 +34,11 @@ defmodule Glot do
         Glot.Translator.grep_keys(@table_name, locale, substring)
       end
 
+      def loaded_files do
+        ensure_started()
+        Glot.Translator.loaded_files(__MODULE__)
+      end
+
       def reload do
         ensure_started()
         Glot.Translator.reload(__MODULE__)

@@ -8,13 +8,13 @@ defmodule Glot.Lexicon do
   @doc """
   Compiles a list of JSONL glossary files into a map of keys (`locale.lexeme`) to expressions.
 
-  Returns a map of keys (`locale.lexeme`) to expressions.
+  Returns a tuple of {translations, file_paths} where translations is a map of keys (`locale.lexeme`) to expressions
+  and file_paths is a list of file paths that were successfully loaded.
   """
-  @spec compile(String.t(), [String.t()]) :: map()
+  @spec compile(String.t(), [String.t()]) :: {map(), [String.t()]}
   def compile(base_path, sources) do
-    sources
-    |> expand_paths(base_path)
-    |> load_all_expressions()
+    paths = expand_paths(sources, base_path)
+    {load_all_expressions(paths), Enum.map(paths, fn {path, _locale} -> path end)}
   end
 
   @spec expand_paths([String.t()], String.t()) :: [{String.t(), String.t()}]

@@ -3,7 +3,7 @@ defmodule Glot.LexiconTest do
   doctest Glot.Lexicon
 
   test "compile/2 with single source" do
-    values = Glot.Lexicon.compile("test/__fixtures__", ["example"])
+    {values, file_paths} = Glot.Lexicon.compile("test/__fixtures__", ["example"])
 
     assert values == %{
              "en.count.first" => "First",
@@ -16,10 +16,15 @@ defmodule Glot.LexiconTest do
              "ru.messages.hello" => "Привет, {{name}}!",
              "ru.messages.score" => "Счёт: {{score}}"
            }
+
+    assert file_paths == [
+             "test/__fixtures__/example.en.jsonl",
+             "test/__fixtures__/example.ru.jsonl"
+           ]
   end
 
   test "compile/2 with multiple sources" do
-    values = Glot.Lexicon.compile("test/__fixtures__", ["example", "validation"])
+    {values, file_paths} = Glot.Lexicon.compile("test/__fixtures__", ["example", "validation"])
 
     assert values == %{
              "en.count.first" => "First",
@@ -54,5 +59,12 @@ defmodule Glot.LexiconTest do
              "ru.validation.required" => "не может быть пустым",
              "ru.validation.term_state" => "Термин {{body}} не NEW, а {{state}}"
            }
+
+    assert file_paths == [
+             "test/__fixtures__/example.en.jsonl",
+             "test/__fixtures__/example.ru.jsonl",
+             "test/__fixtures__/validation.en.jsonl",
+             "test/__fixtures__/validation.ru.jsonl"
+           ]
   end
 end

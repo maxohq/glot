@@ -56,6 +56,13 @@ defmodule Glot.Translator do
     GenServer.call(pid, :has_changes?)
   end
 
+  @doc """
+  Returns the list of file paths that were used to load translations.
+  """
+  def loaded_files(pid) do
+    GenServer.call(pid, :loaded_files)
+  end
+
   def insert_translation(pid, key, value) do
     GenServer.call(pid, {:insert_translation, key, value})
   end
@@ -76,7 +83,7 @@ defmodule Glot.Translator do
     table = :ets.new(table_name, [:set, :named_table, :public])
 
     # Load initial translations
-    translations = Glot.Lexicon.compile(base_path, sources)
+    {translations, loaded_files} = Glot.Lexicon.compile(base_path, sources)
     :ets.insert(table, Enum.to_list(translations))
 
     # Register with watcher for live reloading (only if watch: true)
@@ -90,7 +97,8 @@ defmodule Glot.Translator do
       base_path: base_path,
       sources: sources,
       default_locale: default_locale,
-      has_changes: false
+      has_changes: false,
+      loaded_files: Enum.sort(loaded_files)
     }
 
     {:ok, state}
@@ -98,15 +106,20 @@ defmodule Glot.Translator do
 
   @impl true
   def handle_call(:reload, _from, state) do
-    translations = Glot.Lexicon.compile(state.base_path, state.sources)
+    {translations, loaded_files} = Glot.Lexicon.compile(state.base_path, state.sources)
     :ets.delete_all_objects(state.table)
     :ets.insert(state.table, Enum.to_list(translations))
-    {:reply, :ok, %{state | has_changes: false}}
+    {:reply, :ok, %{state | has_changes: false, loaded_files: Enum.sort(loaded_files)}}
   end
 
   @impl true
   def handle_call(:has_changes?, _from, state) do
     {:reply, state.has_changes, state}
+  end
+
+  @impl true
+  def handle_call(:loaded_files, _from, state) do
+    {:reply, state.loaded_files, state}
   end
 
   @impl true

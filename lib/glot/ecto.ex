@@ -46,7 +46,7 @@ defmodule Glot.Ecto do
   File paths passed to `use Glot.Ecto` should be base paths without extension or locale suffix.
   """
   defmacro __using__(sources) do
-    expressions =
+    {expressions, _file_paths} =
       __CALLER__.file
       |> Path.dirname()
       |> Glot.Lexicon.compile(sources)

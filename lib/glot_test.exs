@@ -177,4 +177,18 @@ defmodule GlotTest do
       assert length(results) > 0
     end
   end
+
+  describe "loaded_files/1" do
+    test "returns sorted list of file paths" do
+      assert TestTranslator.loaded_files() == [
+               "test/__fixtures__/example.en.jsonl",
+               "test/__fixtures__/example.ru.jsonl"
+             ]
+
+      assert TestTranslator2.loaded_files() == [
+               "test/__fixtures__/validation.en.jsonl",
+               "test/__fixtures__/validation.ru.jsonl"
+             ]
+    end
+  end
 end

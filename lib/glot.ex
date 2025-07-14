@@ -50,30 +50,24 @@ defmodule Glot do
         default_locale = @default_locale
         locale = locale || default_locale
 
-        # If the ETS table does not exist yet, use GenServer call for this lookup
-        if :ets.info(table_name) == :undefined do
-          Glot.Translator.t(__MODULE__, key, locale, interpolations)
-        else
-          # Table exists, use direct ETS access
-          full_key = "#{locale}.#{key}"
+        full_key = "#{locale}.#{key}"
 
-          case :ets.lookup(table_name, full_key) do
-            [{^full_key, template}] ->
-              interpolate(template, interpolations)
+        case :ets.lookup(table_name, full_key) do
+          [{^full_key, template}] ->
+            interpolate(template, interpolations)
 
-            [] ->
-              # Fallback to default locale if not found
-              if locale != default_locale do
-                default_key = "#{default_locale}.#{key}"
+          [] ->
+            # Fallback to default locale if not found
+            if locale != default_locale do
+              default_key = "#{default_locale}.#{key}"
 
-                case :ets.lookup(table_name, default_key) do
-                  [{^default_key, template}] -> interpolate(template, interpolations)
-                  [] -> nil
-                end
-              else
-                nil
+              case :ets.lookup(table_name, default_key) do
+                [{^default_key, template}] -> interpolate(template, interpolations)
+                [] -> nil
               end
-          end
+            else
+              nil
+            end
         end
       end
 
@@ -91,17 +85,12 @@ defmodule Glot do
         ensure_started()
         table_name = get_table_name()
 
-        # If the ETS table does not exist yet, return empty list
-        if :ets.info(table_name) == :undefined do
-          []
-        else
-          prefix = "#{locale}."
+        prefix = "#{locale}."
 
-          :ets.tab2list(table_name)
-          |> Enum.filter(fn {key, _val} ->
-            String.starts_with?(key, prefix) and String.contains?(key, substring)
-          end)
-        end
+        :ets.tab2list(table_name)
+        |> Enum.filter(fn {key, _val} ->
+          String.starts_with?(key, prefix) and String.contains?(key, substring)
+        end)
       end
 
       def child_spec(_opts) do

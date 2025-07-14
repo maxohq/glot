@@ -158,6 +158,15 @@ MyApp.Game.grep_keys("en", "game")
 # => [{"en.game.won", "You won!"}, {"en.game.lost", "Game over."}]
 ```
 
+#### `loaded_files()`
+
+Lists loaded files for this module.
+
+```elixir
+MyApp.Game.loaded_files()
+# => [""priv/translations/game.en.jsonl", "priv/translations/game.ru.jsonl"]
+```
+
 ## Architecture
 
 ### Core Components

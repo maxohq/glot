@@ -17,6 +17,29 @@ defmodule Glot.Translator do
     GenServer.call(pid, {:translate, key, locale, interpolations})
   end
 
+  def translate(ets_table, key, locale, default_locale, interpolations) do
+    locale = locale || default_locale
+    full_key = "#{locale}.#{key}"
+
+    case :ets.lookup(ets_table, full_key) do
+      [{^full_key, template}] ->
+        interpolate(template, interpolations)
+
+      [] ->
+        # Fallback to default locale if not found
+        if locale != default_locale do
+          default_key = "#{default_locale}.#{key}"
+
+          case :ets.lookup(ets_table, default_key) do
+            [{^default_key, template}] -> interpolate(template, interpolations)
+            [] -> nil
+          end
+        else
+          nil
+        end
+    end
+  end
+
   @doc """
   Reloads translations from files.
   """

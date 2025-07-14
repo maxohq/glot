@@ -45,30 +45,7 @@ defmodule Glot do
 
       def t(key, locale \\ nil, interpolations \\ []) do
         ensure_started()
-
-        table_name = get_table_name()
-        default_locale = @default_locale
-        locale = locale || default_locale
-
-        full_key = "#{locale}.#{key}"
-
-        case :ets.lookup(table_name, full_key) do
-          [{^full_key, template}] ->
-            interpolate(template, interpolations)
-
-          [] ->
-            # Fallback to default locale if not found
-            if locale != default_locale do
-              default_key = "#{default_locale}.#{key}"
-
-              case :ets.lookup(table_name, default_key) do
-                [{^default_key, template}] -> interpolate(template, interpolations)
-                [] -> nil
-              end
-            else
-              nil
-            end
-        end
+        Glot.Translator.translate(get_table_name(), key, locale, @default_locale, interpolations)
       end
 
       def reload do

@@ -7,7 +7,7 @@ defmodule Glot do
       # Store configuration in module attributes for direct access
       @glot_opts unquote(escaped_opts)
       @default_locale @glot_opts[:default_locale]
-      @table_name String.to_atom("translations_#{__MODULE__}")
+      @table_name Glot.Translator.to_table_name(@glot_opts[:name])
 
       def start_link do
         Glot.Translator.start_link(@glot_opts)
@@ -22,10 +22,6 @@ defmodule Glot do
           _pid ->
             :ok
         end
-      end
-
-      def get_real_table_name do
-        Glot.Translator.get_table_name(__MODULE__)
       end
 
       def get_table_name do

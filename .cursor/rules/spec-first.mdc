@@ -1,10 +1,6 @@
 ---
-description: Spec -> Code
-globs:
 alwaysApply: true
 ---
-
-
 ## Development Workflow: Spec → Code
 
 THESE INSTRUCTIONS ARE CRITICAL!

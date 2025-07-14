@@ -47,10 +47,8 @@ defmodule Glot do
 
         # If the ETS table does not exist yet, use GenServer call for this lookup
         if :ets.info(table_name) == :undefined do
-          IO.puts("table does not exist")
           Glot.Translator.t(__MODULE__, key, locale, interpolations)
         else
-          IO.puts("table exists")
           # Table exists, use direct ETS access
           full_key = "#{locale}.#{key}"
 
@@ -90,14 +88,11 @@ defmodule Glot do
 
         # If the ETS table does not exist yet, return empty list
         if :ets.info(table_name) == :undefined do
-          IO.puts("table does not exist")
           []
         else
-          IO.puts("table exists")
           prefix = "#{locale}."
 
           :ets.tab2list(table_name)
-          |> IO.inspect()
           |> Enum.filter(fn {key, _val} ->
             String.starts_with?(key, prefix) and String.contains?(key, substring)
           end)

@@ -22,19 +22,16 @@ defmodule Glot do
         Glot.Translator.start_link(@glot_opts)
       end
 
-      def get_table_name do
-        @table_name
-      end
-
-      defp interpolate(template, interpolations) do
-        Enum.reduce(interpolations, template, fn {key, value}, acc ->
-          String.replace(acc, "{{#{key}}}", to_string(value))
-        end)
-      end
+      def get_table_name, do: @table_name
 
       def t(key, locale \\ nil, interpolations \\ []) do
         ensure_started()
-        Glot.Translator.t(get_table_name(), key, locale, @default_locale, interpolations)
+        Glot.Translator.t(@table_name, key, locale, @default_locale, interpolations)
+      end
+
+      def grep_keys(locale, substring) do
+        ensure_started()
+        Glot.Translator.grep_keys(@table_name, locale, substring)
       end
 
       def reload do
@@ -45,21 +42,6 @@ defmodule Glot do
       def has_changes? do
         ensure_started()
         Glot.Translator.has_changes?(__MODULE__)
-      end
-
-      def grep_keys(locale, substring) do
-        ensure_started()
-        Glot.Translator.grep_keys(get_table_name(), locale, substring)
-      end
-
-      def child_spec(_opts) do
-        %{
-          id: __MODULE__,
-          start: {__MODULE__, :start_link, []},
-          type: :worker,
-          restart: :permanent,
-          shutdown: 500
-        }
       end
 
       defp ensure_started do

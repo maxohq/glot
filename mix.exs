@@ -24,7 +24,8 @@ defmodule Glot.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:jason, "~> 1.4"}
+      {:jason, "~> 1.4"},
+      {:file_system, "~> 0.2"}
     ]
   end
 end

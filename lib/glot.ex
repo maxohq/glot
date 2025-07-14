@@ -1,4 +1,13 @@
 defmodule Glot do
+  @moduledoc """
+  Use this module to enable translation features for your module.
+
+  ## Options
+  - `:base` - The base directory for translation files
+  - `:sources` - List of translation sources
+  - `:default_locale` - The default locale
+  - `:watch` - (optional, default: false) Enable live reloading of translations in development
+  """
   defmacro __using__(opts) do
     opts = Keyword.put_new(opts, :name, __CALLER__.module)
     escaped_opts = Macro.escape(opts)

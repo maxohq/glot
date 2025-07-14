@@ -54,6 +54,11 @@ defmodule Glot.Translator do
     translations = Glot.Lexicon.compile(base_path, sources)
     :ets.insert(table, Enum.to_list(translations))
 
+    # Register with watcher for live reloading (only if watch: true)
+    if Map.get(opts, :watch, false) do
+      Glot.Watcher.register_module(opts[:name], base_path)
+    end
+
     state = %{
       table: table,
       table_name: table_name,

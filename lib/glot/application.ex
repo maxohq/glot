@@ -12,6 +12,14 @@ defmodule Glot.Application do
       # {Glot.Worker, arg}
     ]
 
+    # Add watcher in development
+    children =
+      if Mix.env() == :dev do
+        [{Glot.Watcher, []} | children]
+      else
+        children
+      end
+
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Glot.Supervisor]

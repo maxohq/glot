@@ -2,15 +2,7 @@
 
 
 defmodule MyApp.AdminGlot do 
-    use Glot, base: "priv/glot/admin", sources: ["example", "validation"], default_locale: "en"
-end
-
-
-defmodule MyApp.AdminGlot do 
-    use Glot, 
-      base: "test/__fixtures__", 
-      sources: ["example", "validation"], 
-      default_locale: "en"
+  use Glot, base: "test/__fixtures__", sources: ["example", "validation"], default_locale: "en", watch: true
 end
 
 
@@ -39,4 +31,4 @@ Requirements:
     - ETS tables? 
 - allow runtime changes based on files: 
     - file watcher? 
-    - on-demand reload? 
+    - on-demand reload?

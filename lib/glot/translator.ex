@@ -10,14 +10,7 @@ defmodule Glot.Translator do
     GenServer.start_link(__MODULE__, opts, name: opts[:name])
   end
 
-  @doc """
-  Gets a translation for the given key and locale.
-  """
-  def t(pid, key, locale \\ nil, interpolations \\ []) do
-    GenServer.call(pid, {:translate, key, locale, interpolations})
-  end
-
-  def translate(ets_table, key, locale, default_locale, interpolations) do
+  def t(ets_table, key, locale, default_locale, interpolations) do
     locale = locale || default_locale
     full_key = "#{locale}.#{key}"
 
@@ -38,6 +31,15 @@ defmodule Glot.Translator do
           nil
         end
     end
+  end
+
+  def grep_keys(ets_table, locale, substring) do
+    prefix = "#{locale}."
+
+    :ets.tab2list(ets_table)
+    |> Enum.filter(fn {key, _val} ->
+      String.starts_with?(key, prefix) and String.contains?(key, substring)
+    end)
   end
 
   @doc """
@@ -92,33 +94,6 @@ defmodule Glot.Translator do
     }
 
     {:ok, state}
-  end
-
-  @impl true
-  def handle_call({:translate, key, locale, interpolations}, _from, state) do
-    locale = locale || state.default_locale
-    full_key = "#{locale}.#{key}"
-
-    result =
-      case :ets.lookup(state.table, full_key) do
-        [{^full_key, template}] ->
-          interpolate(template, interpolations)
-
-        [] ->
-          # Fallback to default locale if not found
-          if locale != state.default_locale do
-            default_key = "#{state.default_locale}.#{key}"
-
-            case :ets.lookup(state.table, default_key) do
-              [{^default_key, template}] -> interpolate(template, interpolations)
-              [] -> nil
-            end
-          else
-            nil
-          end
-      end
-
-    {:reply, result, state}
   end
 
   @impl true

@@ -135,8 +135,6 @@ defmodule GlotTest do
 
   describe "grep_keys" do
     test "finds keys by substring for a locale" do
-      # Ensure GenServer and ETS table are started
-      TestTranslator.t("count.first")
       # Test for English locale
       en_results = TestTranslator.grep_keys("en", "count")
       assert length(en_results) == 2
@@ -152,7 +150,6 @@ defmodule GlotTest do
     end
 
     test "finds keys by substring across different key types" do
-      TestTranslator.t("count.first")
       # Test for "messages" substring
       results = TestTranslator.grep_keys("en", "messages")
       assert length(results) == 2
@@ -161,19 +158,16 @@ defmodule GlotTest do
     end
 
     test "returns empty list for non-matching substring" do
-      TestTranslator.t("count.first")
       results = TestTranslator.grep_keys("en", "nonexistent")
       assert results == []
     end
 
     test "returns empty list for non-matching locale" do
-      TestTranslator.t("count.first")
       results = TestTranslator.grep_keys("fr", "count")
       assert results == []
     end
 
     test "handles case-sensitive substring matching" do
-      TestTranslator.t("count.first")
       # Should not find "Count" when searching for "count" (case sensitive)
       results = TestTranslator.grep_keys("en", "Count")
       assert results == []

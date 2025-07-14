@@ -22,17 +22,6 @@ defmodule Glot do
         Glot.Translator.start_link(@glot_opts)
       end
 
-      defp ensure_started do
-        case Process.whereis(__MODULE__) do
-          nil ->
-            {:ok, _pid} = start_link()
-            :ok
-
-          _pid ->
-            :ok
-        end
-      end
-
       def get_table_name do
         @table_name
       end
@@ -45,7 +34,7 @@ defmodule Glot do
 
       def t(key, locale \\ nil, interpolations \\ []) do
         ensure_started()
-        Glot.Translator.translate(get_table_name(), key, locale, @default_locale, interpolations)
+        Glot.Translator.t(get_table_name(), key, locale, @default_locale, interpolations)
       end
 
       def reload do
@@ -60,14 +49,7 @@ defmodule Glot do
 
       def grep_keys(locale, substring) do
         ensure_started()
-        table_name = get_table_name()
-
-        prefix = "#{locale}."
-
-        :ets.tab2list(table_name)
-        |> Enum.filter(fn {key, _val} ->
-          String.starts_with?(key, prefix) and String.contains?(key, substring)
-        end)
+        Glot.Translator.grep_keys(get_table_name(), locale, substring)
       end
 
       def child_spec(_opts) do
@@ -78,6 +60,17 @@ defmodule Glot do
           restart: :permanent,
           shutdown: 500
         }
+      end
+
+      defp ensure_started do
+        case Process.whereis(__MODULE__) do
+          nil ->
+            {:ok, _pid} = start_link()
+            :ok
+
+          _pid ->
+            :ok
+        end
       end
     end
   end

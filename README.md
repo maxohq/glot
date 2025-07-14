@@ -4,7 +4,7 @@
 
 [![Hex.pm](https://img.shields.io/hexpm/v/glot)](https://hex.pm/packages/glot)
 [![Hex.pm](https://img.shields.io/hexpm/dt/glot)](https://hex.pm/packages/glot)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/your-username/glot/ci.yml)](https://github.com/your-username/glot/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/maxohq/glot/ci.yml)](https://github.com/maxohq/glot/actions)
 
 Glot provides a simple translation system for Elixir applications using JSONL glossaries. It supports interpolation, live reloading in development, and semantic lexeme-based translations.
 

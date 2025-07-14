@@ -1,0 +1,11 @@
+{"key": "validation.required", "value": "can't be blank"}
+{"key": "validation.acceptance", "value": "must be accepted"}
+{"key": "validation.term_state", "value": "Term {{body}} is not NEW but {{state}} instead"}
+{"key": "validation.length.is.string", "value": "should be {{count}} character(s)"}
+{"key": "validation.length.is.binary", "value": "should be {{count}} byte(s)"}
+{"key": "validation.length.is.list", "value": "should have {{count}} item(s)"}
+{"key": "validation.length.is.map", "value": "should have {{count}} item(s)"}
+{"key": "validation.length.min.string", "value": "should be at least {{count}} character(s)"}
+{"key": "validation.length.min.binary", "value": "should be at least {{count}} byte(s)"}
+{"key": "validation.length.min.list", "value": "should have at least {{count}} item(s)"}
+{"key": "validation.length.min.map", "value": "should have at least {{count}} item(s)"} 

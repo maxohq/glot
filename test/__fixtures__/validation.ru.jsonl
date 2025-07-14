@@ -1,0 +1,11 @@
+{"key": "validation.required", "value": "не может быть пустым"}
+{"key": "validation.acceptance", "value": "должно быть принято"}
+{"key": "validation.term_state", "value": "Термин {{body}} не NEW, а {{state}}"}
+{"key": "validation.length.is.string", "value": "должно быть {{count}} символ(ов)"}
+{"key": "validation.length.is.binary", "value": "должно быть {{count}} байт(а)"}
+{"key": "validation.length.is.list", "value": "должно быть {{count}} элемент(ов)"}
+{"key": "validation.length.is.map", "value": "должно быть {{count}} элемент(ов)"}
+{"key": "validation.length.min.string", "value": "должно быть не менее {{count}} символ(ов)"}
+{"key": "validation.length.min.binary", "value": "должно быть не менее {{count}} байт(а)"}
+{"key": "validation.length.min.list", "value": "должно быть не менее {{count}} элемент(ов)"}
+{"key": "validation.length.min.map", "value": "должно быть не менее {{count}} элемент(ов)"} 

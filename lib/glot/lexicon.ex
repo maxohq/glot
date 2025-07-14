@@ -52,24 +52,13 @@ defmodule Glot.Lexicon do
   @spec read_yaml(String.t(), String.t()) :: [{String.t(), String.t()}]
   defp read_yaml(file, locale) do
     with true <- File.exists?(file),
-         {:ok, yaml} <- Glot.Jsonl.read_from_file(file) do
-      yaml
-      |> flatten_keys()
-      |> Enum.map(fn {lexeme, expression} -> {"#{locale}.#{lexeme}", expression} end)
+         {:ok, rows} <- Glot.Jsonl.read_from_file(file) do
+      rows
+      |> Enum.map(fn %{"key" => lexeme, "value" => expression} ->
+        {"#{locale}.#{lexeme}", expression}
+      end)
     else
       _ -> []
     end
-  end
-
-  @spec flatten_keys(map(), String.t() | nil) :: [{String.t(), String.t()}]
-  defp flatten_keys(yaml, prefix \\ nil) do
-    Enum.flat_map(yaml, fn {key, value} ->
-      full_key = if prefix, do: "#{prefix}.#{key}", else: "#{key}"
-
-      case value do
-        %{} -> flatten_keys(value, full_key)
-        val -> [{full_key, val}]
-      end
-    end)
   end
 end

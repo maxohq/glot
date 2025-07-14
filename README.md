@@ -261,6 +261,15 @@ defmodule MyApp.GameTest do
 end
 ```
 
+
+### Troubleshooting
+
+If files are not properly picked up, see what is actually being loaded:
+
+```elixir
+Glot.Lexicon.compile("priv/seeds/cms", ["home", "about", "pricing"])
+```
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

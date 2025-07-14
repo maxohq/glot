@@ -8,15 +8,29 @@ defmodule Glot do
         Glot.Translator.start_link(unquote(escaped_opts))
       end
 
+      defp ensure_started do
+        case Process.whereis(__MODULE__) do
+          nil ->
+            {:ok, _pid} = start_link()
+            :ok
+
+          _pid ->
+            :ok
+        end
+      end
+
       def t(key, locale \\ nil, interpolations \\ []) do
+        ensure_started()
         Glot.Translator.t(__MODULE__, key, locale, interpolations)
       end
 
       def reload do
+        ensure_started()
         Glot.Translator.reload(__MODULE__)
       end
 
       def has_changes? do
+        ensure_started()
         Glot.Translator.has_changes?(__MODULE__)
       end
 

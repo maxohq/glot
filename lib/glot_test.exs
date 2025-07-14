@@ -31,12 +31,6 @@ defmodule GlotTest do
     |> Enum.map(&String.to_atom/1)
     |> Enum.each(&:ets.delete/1)
 
-    # Start only TestTranslator by default
-    start_supervised!(
-      {Glot.Translator,
-       name: TestTranslator, base: "test/__fixtures__", sources: ["example"], default_locale: "en"}
-    )
-
     :ok
   end
 
@@ -66,25 +60,14 @@ defmodule GlotTest do
 
   describe "module isolation" do
     test "different modules have isolated translations" do
-      # Start TestTranslator2 for this specific test with unique name
-      unique_name = String.to_atom("test_translator_2_#{:rand.uniform(1_000_000)}")
-
-      {:ok, _pid} =
-        Glot.Translator.start_link(
-          name: unique_name,
-          base: "test/__fixtures__",
-          sources: ["validation"],
-          default_locale: "en"
-        )
-
       # TestTranslator uses "example" source
       assert TestTranslator.t("count.first") == "First"
       assert TestTranslator.t("messages.hello") == "Hello, {{name}}!"
 
-      # TestTranslator2 uses "validation" source - call directly on the GenServer
+      # TestTranslator2 uses "validation" source
       # validation doesn't have this key
-      assert Glot.Translator.t(unique_name, "count.first") == nil
-      assert Glot.Translator.t(unique_name, "messages.hello") == nil
+      assert TestTranslator2.t("count.first") == nil
+      assert TestTranslator2.t("messages.hello") == nil
     end
 
     test "modules can have different default locales" do
@@ -95,18 +78,8 @@ defmodule GlotTest do
           default_locale: "ru"
       end
 
-      unique_name = String.to_atom("test_translator_ru_#{:rand.uniform(1_000_000)}")
-
-      {:ok, _pid} =
-        Glot.Translator.start_link(
-          name: unique_name,
-          base: "test/__fixtures__",
-          sources: ["example"],
-          default_locale: "ru"
-        )
-
-      assert Glot.Translator.t(unique_name, "count.first") == "Первый"
-      assert Glot.Translator.t(unique_name, "count.first", "en") == "First"
+      assert TestTranslatorRU.t("count.first") == "Первый"
+      assert TestTranslatorRU.t("count.first", "en") == "First"
     end
   end
 
@@ -123,6 +96,31 @@ defmodule GlotTest do
     test "handles non-string interpolation values" do
       assert TestTranslator.t("messages.score", "en", score: 42) == "Score: 42"
       assert TestTranslator.t("messages.score", "en", score: 3.14) == "Score: 3.14"
+    end
+  end
+
+  describe "automatic startup" do
+    test "starts GenServer automatically on first use" do
+      defmodule AutoStartTest do
+        use Glot,
+          base: "test/__fixtures__",
+          sources: ["example"],
+          default_locale: "en"
+      end
+
+      # Verify GenServer is not running initially
+      assert Process.whereis(AutoStartTest) == nil
+
+      # First call should start the GenServer
+      result = AutoStartTest.t("count.first")
+      assert result == "First"
+
+      # Verify GenServer is now running
+      assert Process.whereis(AutoStartTest) != nil
+
+      # Second call should use the existing GenServer
+      result2 = AutoStartTest.t("count.second")
+      assert result2 == "Second"
     end
   end
 end

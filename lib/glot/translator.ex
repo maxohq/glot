@@ -35,20 +35,26 @@ defmodule Glot.Translator do
     GenServer.call(pid, {:insert_translation, key, value})
   end
 
+  def get_table_name(pid) do
+    GenServer.call(pid, :get_table_name)
+  end
+
   # GenServer callbacks
   @impl true
   def init(opts) do
     base_path = opts[:base]
     sources = opts[:sources]
     default_locale = opts[:default_locale] || "en"
+    table_name = String.to_atom("translations_#{opts[:name]}")
     # Create ETS table here so the GenServer owns it
-    table = :ets.new(String.to_atom("translations_#{opts[:name]}"), [:set, :protected])
+    table = :ets.new(table_name, [:set, :named_table, :public])
     # Load initial translations
     translations = Glot.Lexicon.compile(base_path, sources)
     :ets.insert(table, Enum.to_list(translations))
 
     state = %{
       table: table,
+      table_name: table_name,
       base_path: base_path,
       sources: sources,
       default_locale: default_locale,
@@ -102,6 +108,11 @@ defmodule Glot.Translator do
   def handle_call({:insert_translation, key, value}, _from, state) do
     :ets.insert(state.table, [{key, value}])
     {:reply, :ok, state}
+  end
+
+  @impl true
+  def handle_call(:get_table_name, _from, state) do
+    {:reply, state.table_name, state}
   end
 
   # Helper functions

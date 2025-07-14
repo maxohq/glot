@@ -17,23 +17,6 @@ defmodule GlotTest do
       default_locale: "en"
   end
 
-  setup do
-    # Clean up any existing ETS tables with names containing 'translations_'
-    :ets.all()
-    |> Enum.map(fn tid ->
-      case :ets.info(tid, :name) do
-        name when is_atom(name) -> Atom.to_string(name)
-        _ -> nil
-      end
-    end)
-    |> Enum.filter(& &1)
-    |> Enum.filter(&String.contains?(&1, "translations_"))
-    |> Enum.map(&String.to_atom/1)
-    |> Enum.each(&:ets.delete/1)
-
-    :ok
-  end
-
   describe "__using__ macro" do
     test "provides t/1 function" do
       assert TestTranslator.t("count.first") == "First"
@@ -147,6 +130,71 @@ defmodule GlotTest do
       # Should be very fast (under 10ms for 1000 calls)
       # 10ms in microseconds
       assert time < 10_000
+    end
+  end
+
+  describe "grep_keys" do
+    test "finds keys by substring for a locale" do
+      # Ensure GenServer and ETS table are started
+      TestTranslator.t("count.first")
+      TestTranslator.reload()
+      table_name = :erlang.binary_to_atom("translations_Elixir.GlotTest.TestTranslator", :utf8)
+      IO.inspect(:ets.tab2list(table_name), label: "ETS contents for TestTranslator")
+      # Test for English locale
+      en_results = TestTranslator.grep_keys("en", "count")
+      assert length(en_results) == 2
+      assert {"en.count.first", "First"} in en_results
+      assert {"en.count.second", "Second"} in en_results
+
+      # Test for Russian locale
+      ru_results = TestTranslator.grep_keys("ru", "count")
+      assert length(ru_results) == 2
+      assert {"ru.count.first", "Первый"} in ru_results
+      assert {"ru.count.second", "Второй"} in ru_results
+    end
+
+    test "finds keys by substring across different key types" do
+      TestTranslator.t("count.first")
+      TestTranslator.reload()
+      table_name = :erlang.binary_to_atom("translations_Elixir.GlotTest.TestTranslator", :utf8)
+      IO.inspect(:ets.tab2list(table_name), label: "ETS contents for TestTranslator")
+      # Test for "messages" substring
+      results = TestTranslator.grep_keys("en", "messages")
+      assert length(results) == 2
+      assert {"en.messages.hello", "Hello, {{name}}!"} in results
+      assert {"en.messages.score", "Score: {{score}}"} in results
+    end
+
+    test "returns empty list for non-matching substring" do
+      TestTranslator.t("count.first")
+      TestTranslator.reload()
+      table_name = :erlang.binary_to_atom("translations_Elixir.GlotTest.TestTranslator", :utf8)
+      IO.inspect(:ets.tab2list(table_name), label: "ETS contents for TestTranslator")
+      results = TestTranslator.grep_keys("en", "nonexistent")
+      assert results == []
+    end
+
+    test "returns empty list for non-matching locale" do
+      TestTranslator.t("count.first")
+      TestTranslator.reload()
+      table_name = :erlang.binary_to_atom("translations_Elixir.GlotTest.TestTranslator", :utf8)
+      IO.inspect(:ets.tab2list(table_name), label: "ETS contents for TestTranslator")
+      results = TestTranslator.grep_keys("fr", "count")
+      assert results == []
+    end
+
+    test "handles case-sensitive substring matching" do
+      TestTranslator.t("count.first")
+      TestTranslator.reload()
+      table_name = :erlang.binary_to_atom("translations_Elixir.GlotTest.TestTranslator", :utf8)
+      IO.inspect(:ets.tab2list(table_name), label: "ETS contents for TestTranslator")
+      # Should not find "Count" when searching for "count" (case sensitive)
+      results = TestTranslator.grep_keys("en", "Count")
+      assert results == []
+
+      # Should find "count" when searching for "count"
+      results = TestTranslator.grep_keys("en", "count")
+      assert length(results) > 0
     end
   end
 end

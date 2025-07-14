@@ -7,6 +7,7 @@ defmodule Glot do
       # Store configuration in module attributes for direct access
       @glot_opts unquote(escaped_opts)
       @default_locale @glot_opts[:default_locale]
+      @table_name String.to_atom("translations_#{__MODULE__}")
 
       def start_link do
         Glot.Translator.start_link(@glot_opts)
@@ -23,8 +24,12 @@ defmodule Glot do
         end
       end
 
-      defp get_table_name do
-        String.to_atom("translations_#{__MODULE__}")
+      def get_real_table_name do
+        Glot.Translator.get_table_name(__MODULE__)
+      end
+
+      def get_table_name do
+        @table_name
       end
 
       defp interpolate(template, interpolations) do
@@ -42,8 +47,10 @@ defmodule Glot do
 
         # If the ETS table does not exist yet, use GenServer call for this lookup
         if :ets.info(table_name) == :undefined do
+          IO.puts("table does not exist")
           Glot.Translator.t(__MODULE__, key, locale, interpolations)
         else
+          IO.puts("table exists")
           # Table exists, use direct ETS access
           full_key = "#{locale}.#{key}"
 
@@ -75,6 +82,26 @@ defmodule Glot do
       def has_changes? do
         ensure_started()
         Glot.Translator.has_changes?(__MODULE__)
+      end
+
+      def grep_keys(locale, substring) do
+        ensure_started()
+        table_name = get_table_name()
+
+        # If the ETS table does not exist yet, return empty list
+        if :ets.info(table_name) == :undefined do
+          IO.puts("table does not exist")
+          []
+        else
+          IO.puts("table exists")
+          prefix = "#{locale}."
+
+          :ets.tab2list(table_name)
+          |> IO.inspect()
+          |> Enum.filter(fn {key, _val} ->
+            String.starts_with?(key, prefix) and String.contains?(key, substring)
+          end)
+        end
       end
 
       def child_spec(_opts) do

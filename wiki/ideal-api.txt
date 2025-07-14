@@ -1,0 +1,42 @@
+## Usage: 
+
+
+defmodule MyApp.AdminGlot do 
+    use Glot, base: "priv/glot/admin", sources: ["example", "validation"], default_locale: "en"
+end
+
+
+defmodule MyApp.AdminGlot do 
+    use Glot, 
+      base: "test/__fixtures__", 
+      sources: ["example", "validation"], 
+      default_locale: "en"
+end
+
+
+MyApp.AdminGlot.t("count.first", "en") #=> "First"
+MyApp.AdminGlot.t("count.first", "ru") #=> "Первый"
+MyApp.AdminGlot.t("count.first") #=> "First"
+
+MyApp.AdminGlot.t("messages.hello", "en", [name: "John"]) #=> "Hello, John!"
+MyApp.AdminGlot.t("messages.hello", "ru", [name: "John"]) #=> "Привет, John!"
+MyApp.AdminGlot.t("messages.hello", [name: "John"]) #=> "Hello, John!"
+
+MyApp.AdminGlot.t("messages.score", "en", [score: 100]) #=> "Score: 100"
+MyApp.AdminGlot.t("messages.score", "ru", [score: 100]) #=> "Счёт: 100"
+MyApp.AdminGlot.t("messages.score", [score: 100]) #=> "Score: 100"
+
+MyApp.AdminGlot.reload()
+
+MyApp.AdminGlot.has_changes?()
+
+
+
+Requirements: 
+- load translations into memory
+    - genserver + process dict?
+    - persistent_term ? 
+    - ETS tables? 
+- allow runtime changes based on files: 
+    - file watcher? 
+    - on-demand reload? 

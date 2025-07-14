@@ -4,8 +4,12 @@ defmodule Glot do
     escaped_opts = Macro.escape(opts)
 
     quote do
+      # Store configuration in module attributes for direct access
+      @glot_opts unquote(escaped_opts)
+      @default_locale @glot_opts[:default_locale]
+
       def start_link do
-        Glot.Translator.start_link(unquote(escaped_opts))
+        Glot.Translator.start_link(@glot_opts)
       end
 
       defp ensure_started do
@@ -19,9 +23,48 @@ defmodule Glot do
         end
       end
 
+      defp get_table_name do
+        String.to_atom("translations_#{__MODULE__}")
+      end
+
+      defp interpolate(template, interpolations) do
+        Enum.reduce(interpolations, template, fn {key, value}, acc ->
+          String.replace(acc, "{{#{key}}}", to_string(value))
+        end)
+      end
+
       def t(key, locale \\ nil, interpolations \\ []) do
         ensure_started()
-        Glot.Translator.t(__MODULE__, key, locale, interpolations)
+
+        table_name = get_table_name()
+        default_locale = @default_locale
+        locale = locale || default_locale
+
+        # If the ETS table does not exist yet, use GenServer call for this lookup
+        if :ets.info(table_name) == :undefined do
+          Glot.Translator.t(__MODULE__, key, locale, interpolations)
+        else
+          # Table exists, use direct ETS access
+          full_key = "#{locale}.#{key}"
+
+          case :ets.lookup(table_name, full_key) do
+            [{^full_key, template}] ->
+              interpolate(template, interpolations)
+
+            [] ->
+              # Fallback to default locale if not found
+              if locale != default_locale do
+                default_key = "#{default_locale}.#{key}"
+
+                case :ets.lookup(table_name, default_key) do
+                  [{^default_key, template}] -> interpolate(template, interpolations)
+                  [] -> nil
+                end
+              else
+                nil
+              end
+          end
+        end
       end
 
       def reload do

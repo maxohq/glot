@@ -123,4 +123,30 @@ defmodule GlotTest do
       assert result2 == "Second"
     end
   end
+
+  describe "performance" do
+    test "direct ETS access is fast" do
+      defmodule PerformanceTest do
+        use Glot,
+          base: "test/__fixtures__",
+          sources: ["example"],
+          default_locale: "en"
+      end
+
+      # Warm up
+      PerformanceTest.t("count.first")
+
+      # Benchmark direct access
+      {time, _} =
+        :timer.tc(fn ->
+          for _ <- 1..1000 do
+            PerformanceTest.t("count.first")
+          end
+        end)
+
+      # Should be very fast (under 10ms for 1000 calls)
+      # 10ms in microseconds
+      assert time < 10_000
+    end
+  end
 end

@@ -47,7 +47,7 @@ Example structure of glossary:
 
 ## Usage
 
-    use Glossary, ["game", "user"]
+    use Glot, ["game", "user"]
 
 Loads:
 

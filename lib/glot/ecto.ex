@@ -49,7 +49,7 @@ defmodule Glot.Ecto do
     expressions =
       __CALLER__.file
       |> Path.dirname()
-      |> Glot.Lexicon.compile(sources, __CALLER__.module)
+      |> Glot.Lexicon.compile(sources)
 
     quote do
       @glossary unquote(Macro.escape(expressions))

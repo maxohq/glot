@@ -37,7 +37,7 @@ defmodule Glot.MixProject do
   defp deps do
     [
       {:jason, "~> 1.4"},
-      {:file_system, "~> 0.2"},
+      {:file_system, "~> 1.1"},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end

@@ -96,8 +96,7 @@ defmodule Glot.TranslatorTest do
     test "interpolation with multiple variables", %{translator: translator} do
       # Add a test translation with multiple variables
       template = "Hello {{name}}, your score is {{score}}!"
-      state = :sys.get_state(translator)
-      :ets.insert(state.table, [{"en.messages.complex", template}])
+      Translator.insert_translation(translator, "en.messages.complex", template)
       result = Translator.t(translator, "messages.complex", "en", name: "Alice", score: 95)
       assert result == "Hello Alice, your score is 95!"
     end

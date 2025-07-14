@@ -19,6 +19,16 @@ defmodule Glot do
       def has_changes? do
         Glot.Translator.has_changes?(__MODULE__)
       end
+
+      def child_spec(_opts) do
+        %{
+          id: __MODULE__,
+          start: {__MODULE__, :start_link, []},
+          type: :worker,
+          restart: :permanent,
+          shutdown: 500
+        }
+      end
     end
   end
 end

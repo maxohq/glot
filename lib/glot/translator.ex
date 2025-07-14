@@ -31,6 +31,10 @@ defmodule Glot.Translator do
     GenServer.call(pid, :has_changes?)
   end
 
+  def insert_translation(pid, key, value) do
+    GenServer.call(pid, {:insert_translation, key, value})
+  end
+
   # GenServer callbacks
   @impl true
   def init(opts) do
@@ -92,6 +96,12 @@ defmodule Glot.Translator do
   @impl true
   def handle_call(:has_changes?, _from, state) do
     {:reply, state.has_changes, state}
+  end
+
+  @impl true
+  def handle_call({:insert_translation, key, value}, _from, state) do
+    :ets.insert(state.table, [{key, value}])
+    {:reply, :ok, state}
   end
 
   # Helper functions

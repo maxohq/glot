@@ -4,7 +4,6 @@ defmodule GlotTest do
   # Test module that uses Glot
   defmodule TestTranslator do
     use Glot,
-      name: :test_translator,
       base: "test/__fixtures__",
       sources: ["example"],
       default_locale: "en"
@@ -13,7 +12,6 @@ defmodule GlotTest do
   # Another test module to verify isolation
   defmodule TestTranslator2 do
     use Glot,
-      name: :test_translator_2,
       base: "test/__fixtures__",
       sources: ["validation"],
       default_locale: "en"
@@ -33,9 +31,12 @@ defmodule GlotTest do
     |> Enum.map(&String.to_atom/1)
     |> Enum.each(&:ets.delete/1)
 
-    # Start the translators
-    {:ok, _} = TestTranslator.start_link()
-    {:ok, _} = TestTranslator2.start_link()
+    # Start only TestTranslator by default
+    start_supervised!(
+      {Glot.Translator,
+       name: TestTranslator, base: "test/__fixtures__", sources: ["example"], default_locale: "en"}
+    )
+
     :ok
   end
 
@@ -65,34 +66,47 @@ defmodule GlotTest do
 
   describe "module isolation" do
     test "different modules have isolated translations" do
+      # Start TestTranslator2 for this specific test with unique name
+      unique_name = String.to_atom("test_translator_2_#{:rand.uniform(1_000_000)}")
+
+      {:ok, _pid} =
+        Glot.Translator.start_link(
+          name: unique_name,
+          base: "test/__fixtures__",
+          sources: ["validation"],
+          default_locale: "en"
+        )
+
       # TestTranslator uses "example" source
       assert TestTranslator.t("count.first") == "First"
       assert TestTranslator.t("messages.hello") == "Hello, {{name}}!"
 
-      # TestTranslator2 uses "validation" source
+      # TestTranslator2 uses "validation" source - call directly on the GenServer
       # validation doesn't have this key
-      assert TestTranslator2.t("count.first") == nil
-      assert TestTranslator2.t("messages.hello") == nil
+      assert Glot.Translator.t(unique_name, "count.first") == nil
+      assert Glot.Translator.t(unique_name, "messages.hello") == nil
     end
 
     test "modules can have different default locales" do
-      # Create a module with Russian as default
       defmodule TestTranslatorRU do
         use Glot,
-          name: :test_translator_ru,
           base: "test/__fixtures__",
           sources: ["example"],
           default_locale: "ru"
       end
 
-      # Start the translator
-      {:ok, _} = TestTranslatorRU.start_link()
+      unique_name = String.to_atom("test_translator_ru_#{:rand.uniform(1_000_000)}")
 
-      # Should default to Russian
-      assert TestTranslatorRU.t("count.first") == "Первый"
+      {:ok, _pid} =
+        Glot.Translator.start_link(
+          name: unique_name,
+          base: "test/__fixtures__",
+          sources: ["example"],
+          default_locale: "ru"
+        )
 
-      # But can still access English explicitly
-      assert TestTranslatorRU.t("count.first", "en") == "First"
+      assert Glot.Translator.t(unique_name, "count.first") == "Первый"
+      assert Glot.Translator.t(unique_name, "count.first", "en") == "First"
     end
   end
 

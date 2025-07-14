@@ -1,0 +1,11 @@
+{"key": "validation.acceptance", "value": "moet geaccepteerd worden"}
+{"key": "validation.length.is.binary", "value": "moet {{count}} byte(s) zijn"}
+{"key": "validation.length.is.list", "value": "moet {{count}} item(s) hebben"}
+{"key": "validation.length.is.map", "value": "moet {{count}} item(s) hebben"}
+{"key": "validation.length.is.string", "value": "moet {{count}} karakter(s) zijn"}
+{"key": "validation.length.min.binary", "value": "moet ten minste {{count}} byte(s) zijn"}
+{"key": "validation.length.min.list", "value": "moet ten minste {{count}} item(s) hebben"}
+{"key": "validation.length.min.map", "value": "moet ten minste {{count}} item(s) hebben"}
+{"key": "validation.length.min.string", "value": "moet ten minste {{count}} karakter(s) zijn"}
+{"key": "validation.required", "value": "kan niet leeg zijn"}
+{"key": "validation.term_state", "value": "Term {{body}} is niet NEW maar {{state}} in plaats daarvan"} 

@@ -22,7 +22,7 @@ defmodule Glot.Lexicon do
     sources
     |> Enum.flat_map(fn source ->
       base_path
-      |> Path.join("#{source}.??.jsonl")
+      |> Path.join("#{source}.*.jsonl")
       |> Path.wildcard()
       |> Enum.map(&with_locale/1)
     end)

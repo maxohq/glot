@@ -14,10 +14,16 @@ defmodule Glot.LexiconTest do
              "ru.count.second" => "Второй",
              "ru.count.third" => "Третий",
              "ru.messages.hello" => "Привет, {{name}}!",
-             "ru.messages.score" => "Счёт: {{score}}"
+             "ru.messages.score" => "Счёт: {{score}}",
+             "be-nl.count.first" => "Eerste",
+             "be-nl.count.second" => "Tweede",
+             "be-nl.count.third" => "Derde",
+             "be-nl.messages.hello" => "Hallo, {{name}}!",
+             "be-nl.messages.score" => "Score: {{score}}"
            }
 
-    assert file_paths == [
+    assert Enum.sort(file_paths) == [
+             "test/__fixtures__/example.be-nl.jsonl",
              "test/__fixtures__/example.en.jsonl",
              "test/__fixtures__/example.ru.jsonl"
            ]
@@ -36,6 +42,11 @@ defmodule Glot.LexiconTest do
              "ru.count.third" => "Третий",
              "ru.messages.hello" => "Привет, {{name}}!",
              "ru.messages.score" => "Счёт: {{score}}",
+             "be-nl.count.first" => "Eerste",
+             "be-nl.count.second" => "Tweede",
+             "be-nl.count.third" => "Derde",
+             "be-nl.messages.hello" => "Hallo, {{name}}!",
+             "be-nl.messages.score" => "Score: {{score}}",
              "en.validation.acceptance" => "must be accepted",
              "en.validation.length.is.binary" => "should be {{count}} byte(s)",
              "en.validation.length.is.list" => "should have {{count}} item(s)",
@@ -57,12 +68,26 @@ defmodule Glot.LexiconTest do
              "ru.validation.length.min.map" => "должно быть не менее {{count}} элемент(ов)",
              "ru.validation.length.min.string" => "должно быть не менее {{count}} символ(ов)",
              "ru.validation.required" => "не может быть пустым",
-             "ru.validation.term_state" => "Термин {{body}} не NEW, а {{state}}"
+             "ru.validation.term_state" => "Термин {{body}} не NEW, а {{state}}",
+             "be-nl.validation.acceptance" => "moet geaccepteerd worden",
+             "be-nl.validation.length.is.binary" => "moet {{count}} byte(s) zijn",
+             "be-nl.validation.length.is.list" => "moet {{count}} item(s) hebben",
+             "be-nl.validation.length.is.map" => "moet {{count}} item(s) hebben",
+             "be-nl.validation.length.is.string" => "moet {{count}} karakter(s) zijn",
+             "be-nl.validation.length.min.binary" => "moet ten minste {{count}} byte(s) zijn",
+             "be-nl.validation.length.min.list" => "moet ten minste {{count}} item(s) hebben",
+             "be-nl.validation.length.min.map" => "moet ten minste {{count}} item(s) hebben",
+             "be-nl.validation.length.min.string" => "moet ten minste {{count}} karakter(s) zijn",
+             "be-nl.validation.required" => "kan niet leeg zijn",
+             "be-nl.validation.term_state" =>
+               "Term {{body}} is niet NEW maar {{state}} in plaats daarvan"
            }
 
-    assert file_paths == [
+    assert Enum.sort(file_paths) == [
+             "test/__fixtures__/example.be-nl.jsonl",
              "test/__fixtures__/example.en.jsonl",
              "test/__fixtures__/example.ru.jsonl",
+             "test/__fixtures__/validation.be-nl.jsonl",
              "test/__fixtures__/validation.en.jsonl",
              "test/__fixtures__/validation.ru.jsonl"
            ]

@@ -1,0 +1,5 @@
+{"key": "count.first", "value": "Eerste"}
+{"key": "count.second", "value": "Tweede"}
+{"key": "count.third", "value": "Derde"}
+{"key": "messages.score", "value": "Score: {{score}}"}
+{"key": "messages.hello", "value": "Hallo, {{name}}!"} 

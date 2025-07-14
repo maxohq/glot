@@ -180,12 +180,14 @@ defmodule GlotTest do
 
   describe "loaded_files/1" do
     test "returns sorted list of file paths" do
-      assert TestTranslator.loaded_files() == [
+      assert Enum.sort(TestTranslator.loaded_files()) == [
+               "test/__fixtures__/example.be-nl.jsonl",
                "test/__fixtures__/example.en.jsonl",
                "test/__fixtures__/example.ru.jsonl"
              ]
 
-      assert TestTranslator2.loaded_files() == [
+      assert Enum.sort(TestTranslator2.loaded_files()) == [
+               "test/__fixtures__/validation.be-nl.jsonl",
                "test/__fixtures__/validation.en.jsonl",
                "test/__fixtures__/validation.ru.jsonl"
              ]

@@ -8,7 +8,7 @@ defmodule Glot.Application do
     children = []
 
     children =
-      if compile_env() == :dev do
+      if Glot.Config.watch?() do
         [{Glot.Watcher, []} | children]
       else
         children
@@ -16,9 +16,5 @@ defmodule Glot.Application do
 
     opts = [strategy: :one_for_one, name: Glot.Supervisor]
     Supervisor.start_link(children, opts)
-  end
-
-  def compile_env do
-    Application.get_env(:glot, :compile_env, Mix.env())
   end
 end

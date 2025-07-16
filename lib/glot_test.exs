@@ -1,7 +1,6 @@
 defmodule GlotTest do
   use ExUnit.Case, async: false
 
-  # Test module that uses Glot
   defmodule TestTranslator do
     use Glot,
       base: "test/__fixtures__",
